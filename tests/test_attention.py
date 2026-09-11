@@ -370,7 +370,7 @@ def test_paged_mqa_logits():
                         if arch_major == 10:
                             block_kvs = (128, 32, 64)
                         elif arch_major == 12:
-                            block_kvs = (32, 64) if is_mxfp4 else (64, )
+                            block_kvs = (32, 64, 128) if is_mxfp4 else (64, 128)
                         else:
                             block_kvs = (32, 64)
                         for block_kv in block_kvs:

@@ -259,7 +259,7 @@ static torch::Tensor get_paged_mqa_logits_metadata(const torch::Tensor& context_
             /*block_kv=*/64, num_sms, is_context_lens_2d,
             /*num_next_n_atoms=*/1, /*is_varlen=*/false, /*indices=*/nullptr);
     } else if (arch_major == 12) {
-        DG_HOST_ASSERT(block_kv == 32 or block_kv == 64);
+        DG_HOST_ASSERT(block_kv == 32 or block_kv == 64 or block_kv == 128);
         const int next_n_atom = (is_varlen or next_n >= 2) ? 2 : 1;
         const int num_next_n_atoms = (next_n + next_n_atom - 1) / next_n_atom;
         sm120_paged_mqa_logits_metadata(
@@ -320,8 +320,8 @@ static torch::Tensor fp8_fp4_paged_mqa_logits(const std::tuple<torch::Tensor, st
     DG_HOST_ASSERT(
         (arch_major == 10 and (block_kv == 32 or block_kv == 64 or block_kv == 128)) or
         (arch_major == 9 and (block_kv == 32 or block_kv == 64)) or
-        (arch_major == 12 and ((is_fp4 and (block_kv == 32 or block_kv == 64)) or
-                               (not is_fp4 and block_kv == 64))));
+        (arch_major == 12 and ((is_fp4 and (block_kv == 32 or block_kv == 64 or block_kv == 128)) or
+                               (not is_fp4 and (block_kv == 64 or block_kv == 128)))));
     const int kv_head_dim = is_fp4 ? head_dim / 2 : head_dim;
     const int sf_bytes = static_cast<int>(is_mx_sf ? sizeof(int) : sizeof(float));
     DG_HOST_ASSERT(num_heads_kv == 1 and head_dim_with_sf == kv_head_dim + sf_bytes);

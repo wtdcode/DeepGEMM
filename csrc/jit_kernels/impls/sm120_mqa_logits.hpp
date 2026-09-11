@@ -448,7 +448,7 @@ static void sm120_fp8_paged_mqa_logits(
     const int num_groups = split_kv / block_kv;
     const int next_n_atom = (is_varlen or next_n >= 2) ? 2 : 1;
     DG_HOST_ASSERT(device_runtime->get_arch_major() == 12);
-    DG_HOST_ASSERT(block_kv == 64);
+    DG_HOST_ASSERT(block_kv == 64 or block_kv == 128);
     DG_HOST_ASSERT(split_kv == 128 and logits_stride % split_kv == 0);
 
     const auto tensor_map_q = make_tma_2d_desc(
@@ -582,7 +582,7 @@ static void sm120_fp4_paged_mqa_logits(
     const int next_n_atom = (is_varlen or next_n >= 2) ? 2 : 1;
     DG_HOST_ASSERT(device_runtime->get_arch_major() == 12);
     DG_HOST_ASSERT(split_kv == 128 and logits_stride % split_kv == 0);
-    DG_HOST_ASSERT(block_kv == 32 or block_kv == 64);
+    DG_HOST_ASSERT(block_kv == 32 or block_kv == 64 or block_kv == 128);
     DG_HOST_ASSERT(head_dim == 128);
 
     const auto tensor_map_q = make_tma_2d_desc(
